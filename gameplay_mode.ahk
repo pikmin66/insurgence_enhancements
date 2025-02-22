@@ -6,76 +6,74 @@ SetBatchLines -1
 SetKeyDelay, 0
 
 ; ======== GLOBAL VARIABLES ========
-global prevStates := {}  ; Fixed initialization
+global prevGameWidth := 0
+global prevGameHeight := 0
+global prevStates := {}
+global hBlackBG
 
 ; ======== BLACK BACKGROUND ========
-Gui, Color, 000000
-Gui, -Caption +ToolWindow +AlwaysOnTop
-Gui, Show, x0 y0 w%A_ScreenWidth% h%A_ScreenHeight%
+Gui, BlackBG:New, +HwndhBlackBG -Caption +ToolWindow +E0x20  ; Click-through
+Gui, BlackBG:Color, 000000
+Gui, BlackBG:Show, x0 y0 w%A_ScreenWidth% h%A_ScreenHeight% NoActivate
 
 ; ======== LAUNCH GAME ========
-Run, "Game.exe"
+Run, Game.exe  ; Replace with your EXE
 WinWait, Pokemon Insurgence
 
-; ======== CENTERING SYSTEM ========
+; ======== FORCE BORDERLESS ========
 SetTitleMatchMode, 2
-WinGetPos,,, Width, Height, Pokemon Insurgence
-ScreenWidth := A_ScreenWidth
-ScreenHeight := A_ScreenHeight
-Gosub, CenterWindow
-
-; ======== WINDOW STYLING ========
-WinSet, Style, -0xC00000, Pokemon Insurgence
-WinSet, Style, -0x40000, Pokemon Insurgence
-WinSet, AlwaysOnTop, On, Pokemon Insurgence
+WinSet, Style, -0xC00000, Pokemon Insurgence  ; Remove title bar
+WinSet, Style, -0x40000, Pokemon Insurgence   ; Remove border
+WinSet, AlwaysOnTop, On, Pokemon Insurgence   ; Keep above background
 WinActivate, Pokemon Insurgence
 
+; ======== INITIAL WINDOW SETUP ========
+Sleep, 2000  ; Let game stabilize
+UpdateGameWindowSize(true)  ; Force borderless on launch
+
 ; ======== CONTROLLER CONFIG ========
+JoyID := 1
 #Persistent
 SetTimer, ControllerInput, 5
-JoyID := 1
-
-; ======== PROCESS TRACKING ========
-Process, Exist, Game.exe
-gamePID := ErrorLevel
 SetTimer, CheckGameProcess, 1000
-SetTimer, ForceFocus, 500
+SetTimer, WindowSizeMonitor, 500
 
 return
 
-; ======== DYNAMIC CENTERING ========
-CenterWindow:
-  WinGetPos,,, CurrentWidth, CurrentHeight, Pokemon Insurgence
+; ======== DYNAMIC WINDOW ADJUSTMENT ========
+WindowSizeMonitor:
+  UpdateGameWindowSize()
+return
+
+UpdateGameWindowSize(force := false) {
+  global prevGameWidth, prevGameHeight, hBlackBG
+  
+  ; Force borderless mode
+  WinSet, Style, -0xC00000, Pokemon Insurgence  ; Remove title bar
+  WinSet, Style, -0x40000, Pokemon Insurgence   ; Remove border
+  
+  ; Get window position/size
+  WinGetPos, X, Y, CurrentWidth, CurrentHeight, Pokemon Insurgence
+  if (!force && CurrentWidth = prevGameWidth && CurrentHeight = prevGameHeight)
+    return
+  
+  ; Update black background cutout
+  WinSet, Region, %X%-%Y% %CurrentWidth% %CurrentHeight%, ahk_id %hBlackBG%
+  
+  ; Center window
   XPos := (A_ScreenWidth - CurrentWidth) // 2
   YPos := (A_ScreenHeight - CurrentHeight) // 2
   WinMove, Pokemon Insurgence,, %XPos%, %YPos%
-return
-
-; ======== WINDOW MANAGEMENT ========
-ForceFocus:
-  IfWinExist, Pokemon Insurgence
-  {
-    WinGetPos,,, CurrentWidth, CurrentHeight, Pokemon Insurgence
-    Gosub, CenterWindow
-    WinSet, Style, -0xC00000, Pokemon Insurgence
-    WinSet, Style, -0x40000, Pokemon Insurgence
-    WinActivate, Pokemon Insurgence
-  }
-return
+  
+  prevGameWidth := CurrentWidth
+  prevGameHeight := CurrentHeight
+}
 
 ; ======== AUTO-CLOSE ========
 CheckGameProcess:
-  Process, Exist, %gamePID%
-  gameRunning := ErrorLevel
-  IfWinNotExist, Pokemon Insurgence
-    gameRunning := 0
-
-  if (!gameRunning)
-  {
-    Gui, Destroy
-    WinSet, AlwaysOnTop, Off, Pokemon Insurgence
-    WinSet, Style, +0xC00000, Pokemon Insurgence
-    WinSet, Style, +0x40000, Pokemon Insurgence
+  Process, Exist, Game.exe
+  if (!ErrorLevel || !WinExist("Pokemon Insurgence")) {
+    Gui, BlackBG:Destroy
     ExitApp
   }
 return
