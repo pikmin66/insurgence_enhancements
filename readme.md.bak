@@ -65,7 +65,7 @@ This repository provides three AutoHotkey scripts (and pre-compiled `.exe` files
 -------------------------|-------------  
 Game window not centered | Adjust the `Sleep` timer in the script (increase if your PC is slow to load).  
 Controller not detected  | Ensure it’s plugged in before launching. Edit `JoyID := 1` in the script if needed.  
-Black background missing | Run the script as Administrator.  
+Black background missing | Run the script as Administrator.  cha
 Script blocked           | Allow through antivirus/firewall.  
 Game running slower      | Run the script as Administrator.
 
@@ -75,6 +75,10 @@ Game running slower      | Run the script as Administrator.
 - **Not Officially Affiliated** with Pokémon Insurgence or its developers.  
 - Use at your own risk. Always back up your save files.  
 - Scripts are provided as-is.  
+---
+## To-do
+- Gameplay mode exit debugging
+- Dexnav controller support
 
 ---
 

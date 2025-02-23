@@ -65,9 +65,11 @@ This repository provides three AutoHotkey scripts (and pre-compiled `.exe` files
 -------------------------|-------------  
 Game window not centered | Adjust the `Sleep` timer in the script (increase if your PC is slow to load).  
 Controller not detected  | Ensure it’s plugged in before launching. Edit `JoyID := 1` in the script if needed.  
-Black background missing | Run the script as Administrator.  
+Black background missing | Run the script as Administrator.  cha
 Script blocked           | Allow through antivirus/firewall.  
 Game running slower      | Run the script as Administrator.
+Game frozen              | Click on the game screen.
+Can't exit to taskbar    | Click on the black border.
 
 ---
 
@@ -77,7 +79,7 @@ Game running slower      | Run the script as Administrator.
 - Scripts are provided as-is.  
 ---
 ## To-do
-- Polish controller support (expand buttons)
+- Gameplay mode exit debugging
 - Dexnav controller support
 
 ---
