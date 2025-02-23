@@ -67,6 +67,7 @@ Game window not centered | Adjust the `Sleep` timer in the script (increase if y
 Controller not detected  | Ensure it’s plugged in before launching. Edit `JoyID := 1` in the script if needed.  
 Black background missing | Run the script as Administrator.  
 Script blocked           | Allow through antivirus/firewall.  
+Game running slower      | Run the script as Administrator.
 
 ---
 

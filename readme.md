@@ -75,6 +75,10 @@ Game running slower      | Run the script as Administrator.
 - **Not Officially Affiliated** with Pokémon Insurgence or its developers.  
 - Use at your own risk. Always back up your save files.  
 - Scripts are provided as-is.  
+---
+## To-do
+- Polish controller support (expand buttons)
+- Dexnav controller support
 
 ---
 
