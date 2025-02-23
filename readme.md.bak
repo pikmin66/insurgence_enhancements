@@ -41,7 +41,7 @@ This repository provides three AutoHotkey scripts (and pre-compiled `.exe` files
 
 ## 🕹️ Usage  
 ### For All Scripts:  
-1. **Run as Administrator** (Right-click > Run as Admin) on any of the compiled exes.  
+1. **Click** on any of the compiled exes.  
 2. **Pokémon Insurgence launches automatically**.  
 
 ### Script-Specific Notes:  
