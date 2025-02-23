@@ -31,7 +31,7 @@ This repository provides three AutoHotkey scripts (and pre-compiled `.exe` files
 
 ## 📥 Installation  
 1. **Download the Files**  
-   - Grab the `.exe` files from the [Releases](https://github.com/yourusername/yourrepo/releases) section.  
+   - Grab the `.exe` files from the [Releases](https://github.com/pikmin66/insurgence_enhancements/releases) section.  
    - *OR* compile the `.ahk` scripts yourself using [AutoHotkey](https://www.autohotkey.com/).  
 
 2. **Place Files in Game Folder**  
