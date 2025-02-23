@@ -80,5 +80,3 @@ Script blocked           | Allow through antivirus/firewall.
 ## 📜 Credits  
 - Scripts by pikmin66.  
 - Pokémon Insurgence by [The Suzerain Team](https://www.p-insurgence.com/).  
-
-**Enjoy your enhanced Pokémon adventure!** 🚀  
