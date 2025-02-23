@@ -1,7 +1,7 @@
 ; ======== PERFORMANCE TWEAKS ========
 #InstallKeybdHook
 #UseHook Off
-SendMode Event
+SendMode Input  ; Fastest key response
 SetBatchLines -1
 SetKeyDelay, 0
 
@@ -10,6 +10,10 @@ global prevGameWidth := 0
 global prevGameHeight := 0
 global prevStates := {}
 global hBlackBG
+
+; ======== CONTROLLER CONFIG ========
+JoyID := 1       ; Change if multiple controllers
+deadzone := 5    ; Tighter deadzone (adjust 1-10)
 
 ; ======== BLACK BACKGROUND ========
 Gui, BlackBG:New, +HwndhBlackBG -Caption +ToolWindow +E0x20  ; Click-through
@@ -31,8 +35,6 @@ WinActivate, Pokemon Insurgence
 Sleep, 2000  ; Let game stabilize
 UpdateGameWindowSize(true)  ; Force borderless on launch
 
-; ======== CONTROLLER CONFIG ========
-JoyID := 1
 #Persistent
 SetTimer, ControllerInput, 5
 SetTimer, CheckGameProcess, 1000
@@ -73,122 +75,102 @@ UpdateGameWindowSize(force := false) {
 CheckGameProcess:
   Process, Exist, Game.exe
   if (!ErrorLevel || !WinExist("Pokemon Insurgence")) {
+    ; Release all keys on exit
+    Send, {Right up}{Left up}{Down up}{Up up}
+    for button, state in prevStates {
+      Send, % "{" . GetKeyName(button) . " up}"
+    }
     Gui, BlackBG:Destroy
     ExitApp
   }
 return
 
-; ======== CONTROLLER INPUT (FIXED) ========
+; ======== CONTROLLER INPUT (REVISED) ========
 ControllerInput:
   IfWinNotExist, Pokemon Insurgence
     ExitApp
 
   IfWinActive, Pokemon Insurgence
   {
-    ; --- Movement ---
+    ; === PRECISE MOVEMENT ===
     GetKeyState, JoyX, %JoyID%JoyX
     GetKeyState, JoyY, %JoyID%JoyY
     GetKeyState, JoyPOV, %JoyID%JoyPOV
 
-    DpadUp := (JoyPOV = 0)
+    ; D-pad takes priority
     DpadRight := (JoyPOV = 9000)
-    DpadDown := (JoyPOV = 18000)
     DpadLeft := (JoyPOV = 27000)
+    DpadDown := (JoyPOV = 18000)
+    DpadUp := (JoyPOV = 0)
 
-    ; Horizontal
-    if (JoyX > 65 || DpadRight)
+    ; Horizontal Axis
+    if (DpadRight || JoyX > 50 + deadzone)
       Send, {Right down}
-    else if (JoyX < 35 || DpadLeft)
+    else if (DpadLeft || JoyX < 50 - deadzone)
       Send, {Left down}
     else
-    {
-      Send, {Right up}
-      Send, {Left up}
-    }
+      Send, {Right up}{Left up}
 
-    ; Vertical
-    if (JoyY > 65 || DpadDown)
+    ; Vertical Axis
+    if (DpadDown || JoyY > 50 + deadzone)
       Send, {Down down}
-    else if (JoyY < 35 || DpadUp)
+    else if (DpadUp || JoyY < 50 - deadzone)
       Send, {Up down}
     else
-    {
-      Send, {Down up}
-      Send, {Up up}
-    }
+      Send, {Down up}{Up up}
 
-    ; --- Buttons ---
-    global prevStates  ; Access global variable
-    Loop 8
-    {
+    ; === CONTROLLER BUTTONS (1-12) ===
+    global prevStates
+    Loop 12 {
       button := A_Index
       GetKeyState, state, % JoyID "Joy" button
       
-      if (state = "D" && !prevStates.HasKey(button))
-      {
-        ; Press
-        if (button = 1)
+      if (state = "D" && !prevStates.HasKey(button)) {
+        if (button = 1)        ; A - Confirm
           Send, {c down}
-        else if (button = 2)
+        else if (button = 2)   ; B - Cancel
           Send, {x down}
-        else if (button = 3)
+        else if (button = 3)   ; X - Run
           Send, {z down}
-        else if (button = 4)
-          Send, {Enter}
-        else if (button = 5)
-          Send, {q}
-        else if (button = 6)
-          Send, {w}
-        else if (button = 7)
-          Send, {Esc}
-        else if (button = 8)
-          Send, {v}
+        else if (button = 4)   ; Y - Menu
+          Send, {Enter down}
+        else if (button = 5)   ; LB - Q
+          Send, {q down}
+        else if (button = 6)   ; RB - W
+          Send, {w down}
+        else if (button = 7)   ; Back - Autorun (S)
+          Send, {s down}
+        else if (button = 8)   ; Start - Quicksave (V)
+          Send, {v down}
+        else if (button = 9)   ; L3 - Speed-Up (M)
+          Send, {m down}
+        else if (button = 10)  ; R3 - DexNav (D)
+          Send, {d down}
+        else if (button = 11)  ; LT - T
+          Send, {t down}
+        else if (button = 12)  ; RT - Y
+          Send, {y down}
+        
         prevStates[button] := true
       }
-      else if (state = "U" && prevStates.HasKey(button))
-      {
-        ; Release
-        if (button = 1)
-          Send, {c up}
-        else if (button = 2)
-          Send, {x up}
-        else if (button = 3)
-          Send, {z up}
-        else if (button = 4)
-          Send, {Enter up}
-        else if (button = 5)
-          Send, {q up}
-        else if (button = 6)
-          Send, {w up}
-        else if (button = 7)
-          Send, {Esc up}
-        else if (button = 8)
-          Send, {v up}
+      else if (state = "U" && prevStates.HasKey(button)) {
+        key := GetKeyName(button)
+        Send, % "{" . key . " up}"
         prevStates.Delete(button)
       }
     }
   }
-  else  ; Release all keys if inactive
-  {
-    for button, state in prevStates
-    {
-      if (button = 1)
-        Send, {c up}
-      else if (button = 2)
-        Send, {x up}
-      else if (button = 3)
-        Send, {z up}
-      else if (button = 4)
-        Send, {Enter up}
-      else if (button = 5)
-        Send, {q up}
-      else if (button = 6)
-        Send, {w up}
-      else if (button = 7)
-        Send, {Esc up}
-      else if (button = 8)
-        Send, {v up}
+  else {  ; Release all inputs if window inactive
+    Send, {Right up}{Left up}{Down up}{Up up}
+    for button, state in prevStates {
+      Send, % "{" . GetKeyName(button) . " up}"
     }
     prevStates := {}
   }
 return
+
+; ======== HELPER FUNCTION ========
+GetKeyName(index) {
+  static keys := ["c","x","z","Enter","q","w","s","v","m","d","t","y"]
+  return keys.HasKey(index) ? keys[index] : ""
+}
