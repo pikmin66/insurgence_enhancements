@@ -70,6 +70,7 @@ Script blocked           | Allow through antivirus/firewall.
 Game running slower      | Run the script as Administrator.
 Game frozen              | Click on the game screen.
 Can't exit to taskbar    | Click on the black border.
+Game.exe not found       | Run the script as Administrator.
 
 ---
 
